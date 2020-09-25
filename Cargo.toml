@@ -1,0 +1,8 @@
+[package]
+name = "raytracer-weekend"
+version = "0.1.0"
+authors = ["Sascha Hagedorn <mail@shagedorn.net>"]
+edition = "2018"
+
+[dependencies]
+# vec3 = { git = "https://github.com/ryankaplan/vec3" }
