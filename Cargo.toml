@@ -5,4 +5,7 @@ authors = ["Sascha Hagedorn <mail@shagedorn.net>"]
 edition = "2018"
 
 [dependencies]
-# vec3 = { git = "https://github.com/ryankaplan/vec3" }
+rand = "0.7.3"
+
+[profile.dev]
+opt-level = 1
