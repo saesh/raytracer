@@ -1,5 +1,6 @@
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
+use crate::structures::material::Material;
 
 pub trait Hittable {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
@@ -10,10 +11,11 @@ pub struct HitRecord {
     pub t: f32,
     pub normal: Vec3,
     pub front_face: bool,
+    pub material: Box<dyn Material>,
 }
 
 impl HitRecord {
-    pub fn new(p: Vec3, t: f32, ray: &Ray, outward_normal: &Vec3) -> HitRecord {
+    pub fn new(p: Vec3, t: f32, ray: &Ray, outward_normal: &Vec3, material: Box<dyn Material>) -> HitRecord {
         let front_face = Vec3::dot(&ray.direction, outward_normal) < 0.0;
 
         HitRecord {
@@ -24,6 +26,7 @@ impl HitRecord {
                 true => Vec3::new(outward_normal.x, outward_normal.y, outward_normal.z),
                 false => -1.0 * Vec3::new(outward_normal.x, outward_normal.y, outward_normal.z)
             },
+            material: material,
         }
     }
 }

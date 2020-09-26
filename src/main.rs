@@ -12,6 +12,7 @@ use structures::geometry::Sphere;
 use structures::hittable::{Hittable, HitRecord};
 use structures::ray::Ray;
 use structures::vec3::*;
+use structures::material::{Lambertian, Metal};
 
 fn main() {
     let start = Instant::now();
@@ -28,8 +29,16 @@ fn main() {
 
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0)));
+
+    let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    let material_center = Lambertian::new(Color::new(0.7, 0.3, 0.3));
+    let material_left   = Metal::new(Color::new(0.8, 0.8, 0.8));
+    let material_right  = Metal::new(Color::new(0.8, 0.6, 0.2));
+
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, Box::new(material_ground))));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0,    0.0, -1.0), 0.5,   Box::new(material_center))));
+    objects.push(Box::new(Sphere::new(Vec3::new(-1.0,   0.0, -1.0), 0.5,   Box::new(material_left))));
+    objects.push(Box::new(Sphere::new(Vec3::new( 1.0,   0.0, -1.0), 0.5,   Box::new(material_right))));
 
     // render
     ppm::write_header(image_width, image_height);
@@ -64,8 +73,10 @@ fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hittable>>, depth: i32) -> Color {
 
     match hit_scene(ray, objects) {
         Some(hit_record) => {
-            let target = hit_record.p + hit_record.normal + random_in_hemisphere(hit_record.normal);
-            0.5 * ray_color(&Ray::new(hit_record.p, target - hit_record.p), objects, depth - 1)
+            return match hit_record.material.scatter(ray, &hit_record) {
+                Some((color, new_ray)) => color * ray_color(&new_ray, objects, depth - 1),
+                None => BLACK
+            }
         },
         None => background_color(&ray),
     }

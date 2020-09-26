@@ -35,26 +35,30 @@ impl Vec3 {
     pub fn normalize(self) -> Vec3 {
         return self / self.length()
     }
-}
 
-pub fn random_bounded(min: f32, max: f32) -> Vec3 {
-    Vec3 {
-        x: random::random_double_bounded(min, max),
-        y: random::random_double_bounded(min, max),
-        z: random::random_double_bounded(min, max),
+    pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+        return v - 2.0 * Vec3::dot(v, n) * n;
     }
 }
 
-pub fn random_in_unit_sphere() -> Vec3 {
-    loop {
-        let p = random_bounded(-1.0, 1.0);
-        if p.length_squared() >= 1.0 { continue };
-        return p;
-    }
-}
+// pub fn random_bounded(min: f32, max: f32) -> Vec3 {
+//     Vec3 {
+//         x: random::random_double_bounded(min, max),
+//         y: random::random_double_bounded(min, max),
+//         z: random::random_double_bounded(min, max),
+//     }
+// }
+
+// pub fn random_in_unit_sphere() -> Vec3 {
+//     loop {
+//         let p = random_bounded(-1.0, 1.0);
+//         if p.length_squared() >= 1.0 { continue };
+//         return p;
+//     }
+// }
 
 // Lambertian distribution
-pub fn _random_unit_vector() -> Vec3 {
+pub fn random_unit_vector() -> Vec3 {
     let a = random::random_double_bounded(0.0, 2.0 * PI);
     let z = random::random_double_bounded(-1.0, 1.0);
     let r = (1.0 - z*z).sqrt();
@@ -67,14 +71,14 @@ pub fn _random_unit_vector() -> Vec3 {
 }
 
 // hemispherical scattering
-pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
-    let in_unit_sphere = random_in_unit_sphere();
-    if Vec3::dot(&in_unit_sphere, &normal) > 0.0 {
-        return in_unit_sphere;
-    } else {
-        return -1.0 * in_unit_sphere;
-    }
-}
+// pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
+//     let in_unit_sphere = random_in_unit_sphere();
+//     if Vec3::dot(&in_unit_sphere, &normal) > 0.0 {
+//         return in_unit_sphere;
+//     } else {
+//         return -1.0 * in_unit_sphere;
+//     }
+// }
 
 impl Add<Vec3> for Vec3 {
     type Output = Vec3;
@@ -112,6 +116,31 @@ impl Sub<Vec3> for Vec3 {
     }
 }
 
+impl Sub<&Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, _rhs: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - _rhs.x,
+            y: self.y - _rhs.y,
+            z: self.z - _rhs.z,
+        }
+    }
+}
+
+impl Sub<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, _rhs: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - _rhs.x,
+            y: self.y - _rhs.y,
+            z: self.z - _rhs.z,
+        }
+    }
+}
+
+
 impl Mul<Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -140,6 +169,18 @@ impl Mul<Vec3> for f32 {
     type Output = Vec3;
 
     fn mul(self, _rhs: Vec3) -> Vec3 {
+        Vec3 {
+            x: self * _rhs.x,
+            y: self * _rhs.y,
+            z: self * _rhs.z,
+        }
+    }
+}
+
+impl Mul<&Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, _rhs: &Vec3) -> Vec3 {
         Vec3 {
             x: self * _rhs.x,
             y: self * _rhs.y,

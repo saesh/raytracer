@@ -1,15 +1,21 @@
 use crate::structures::hittable::{Hittable, HitRecord};
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
+use crate::structures::material::Material;
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
+    pub material: Box<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f32) -> Sphere {
-        Sphere {center: center, radius: radius}
+    pub fn new(center: Vec3, radius: f32, material: Box<dyn Material>) -> Sphere {
+        Sphere {center: center, radius: radius, material: material}
+    }
+
+    pub fn material(&self) -> Box<dyn Material> {
+        return dyn_clone::clone_box(&*self.material);
     }
 }
 
@@ -33,7 +39,7 @@ impl Hittable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal);
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
 
                 return Some(hit_record);
             }
@@ -42,7 +48,7 @@ impl Hittable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal);
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
 
                 return Some(hit_record);
             } 
