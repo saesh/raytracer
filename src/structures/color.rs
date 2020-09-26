@@ -1,5 +1,7 @@
 use std::ops::{Add, Mul};
 
+use crate::io::random;
+
 #[derive(Copy, Clone)]
 pub struct Color {
     pub r: f32,
@@ -10,6 +12,22 @@ pub struct Color {
 impl Color {
     pub fn new(r: f32, g: f32, b: f32) -> Color {
         Color {r: r, g: g, b: b}
+    }
+
+    pub fn random() -> Color {
+        Color {
+            r: random::random_double(),
+            g: random::random_double(),
+            b: random::random_double(),
+        }
+    }
+
+    pub fn random_bounded(min: f32, max: f32) -> Color {
+        Color {
+            r: random::random_double_bounded(min, max),
+            g: random::random_double_bounded(min, max),
+            b: random::random_double_bounded(min, max),
+        }
     }
 }
 
@@ -52,6 +70,18 @@ impl Mul<Color> for f32 {
             r: self * _rhs.r,
             g: self * _rhs.g,
             b: self * _rhs.b,
+        }
+    }
+}
+
+impl Mul<f32> for Color {
+    type Output = Color;
+
+    fn mul(self, _rhs: f32) -> Color {
+        Color {
+            r: self.r * _rhs,
+            g: self.g * _rhs,
+            b: self.b * _rhs,
         }
     }
 }
