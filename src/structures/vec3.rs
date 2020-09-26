@@ -24,6 +24,14 @@ impl Vec3 {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
+    pub fn cross(a: &Vec3, b: &Vec3) -> Vec3 {
+        Vec3 {
+            x: a.y * b.z - a.z * b.y,
+            y: a.z * b.x - a.x * b.z,
+            z: a.x * b.y - a.y * b.x,
+        }
+    }
+
     pub fn length(self) -> f32 {
         return self.length_squared().sqrt();
     }

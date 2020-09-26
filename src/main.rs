@@ -19,13 +19,18 @@ fn main() {
 
     // image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    let image_width: i32= 800;
+    let image_width: i32 = 800;
     let image_height: i32 = (image_width as f32 / ASPECT_RATIO) as i32;
     let samples_per_pixel = 100;
     let max_depth = 50;
 
     // camera
-    let camera: Camera = Camera::new();
+    let camera: Camera = Camera::new(
+        Vec3::new(-2.0, 2.0, 1.0), 
+        Vec3::new(0.0, 0.0, -1.0), 
+        Vec3::new(0.0, 1.0, 0.0), 
+        20.0, 
+        ASPECT_RATIO);
 
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
