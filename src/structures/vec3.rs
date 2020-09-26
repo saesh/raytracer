@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub, Mul, Div};
 use std::f32::consts::PI;
 
-use crate::io::random;
+use crate::io::random::{random_double_bounded};
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -58,9 +58,9 @@ impl Vec3 {
 
 pub fn random_bounded(min: f32, max: f32) -> Vec3 {
     Vec3 {
-        x: random::random_double_bounded(min, max),
-        y: random::random_double_bounded(min, max),
-        z: random::random_double_bounded(min, max),
+        x: random_double_bounded(min, max),
+        y: random_double_bounded(min, max),
+        z: random_double_bounded(min, max),
     }
 }
 
@@ -74,8 +74,8 @@ pub fn random_in_unit_sphere() -> Vec3 {
 
 // Lambertian distribution
 pub fn random_unit_vector() -> Vec3 {
-    let a = random::random_double_bounded(0.0, 2.0 * PI);
-    let z = random::random_double_bounded(-1.0, 1.0);
+    let a = random_double_bounded(0.0, 2.0 * PI);
+    let z = random_double_bounded(-1.0, 1.0);
     let r = (1.0 - z*z).sqrt();
 
     Vec3 {
@@ -94,6 +94,14 @@ pub fn random_unit_vector() -> Vec3 {
 //         return -1.0 * in_unit_sphere;
 //     }
 // }
+
+pub fn random_in_unit_disc() -> Vec3 {
+    loop {
+        let p = Vec3::new(random_double_bounded(-1.0, 1.0), random_double_bounded(-1.0, 1.0), 0.0);
+        if p.length_squared() >= 1.0 { continue };
+        return p;
+    }
+}
 
 impl Add<Vec3> for Vec3 {
     type Output = Vec3;

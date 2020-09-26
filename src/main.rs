@@ -25,12 +25,20 @@ fn main() {
     let max_depth = 50;
 
     // camera
+    let lookfrom = Vec3::new(3.0, 3.0, 2.0);
+    let lookat = Vec3::new(0.0, 0.0, -1.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = (lookfrom - lookat).length();
+    let aperture = 2.0;
+
     let camera: Camera = Camera::new(
-        Vec3::new(-2.0, 2.0, 1.0), 
-        Vec3::new(0.0, 0.0, -1.0), 
-        Vec3::new(0.0, 1.0, 0.0), 
+        lookfrom, 
+        lookat, 
+        vup, 
         20.0, 
-        ASPECT_RATIO);
+        ASPECT_RATIO,
+        aperture,
+        dist_to_focus);
 
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
