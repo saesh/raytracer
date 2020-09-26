@@ -1,4 +1,6 @@
 use std::ops::{Add, Sub, Mul, Div};
+use std::f32::consts::PI;
+
 use crate::io::random;
 
 #[derive(Copy, Clone)]
@@ -48,6 +50,29 @@ pub fn random_in_unit_sphere() -> Vec3 {
         let p = random_bounded(-1.0, 1.0);
         if p.length_squared() >= 1.0 { continue };
         return p;
+    }
+}
+
+// Lambertian distribution
+pub fn _random_unit_vector() -> Vec3 {
+    let a = random::random_double_bounded(0.0, 2.0 * PI);
+    let z = random::random_double_bounded(-1.0, 1.0);
+    let r = (1.0 - z*z).sqrt();
+
+    Vec3 {
+        x: r * a.cos(),
+        y: r * a.sin(),
+        z: z
+    }
+}
+
+// hemispherical scattering
+pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
+    let in_unit_sphere = random_in_unit_sphere();
+    if Vec3::dot(&in_unit_sphere, &normal) > 0.0 {
+        return in_unit_sphere;
+    } else {
+        return -1.0 * in_unit_sphere;
     }
 }
 

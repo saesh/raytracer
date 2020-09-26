@@ -64,7 +64,7 @@ fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hittable>>, depth: i32) -> Color {
 
     match hit_scene(ray, objects) {
         Some(hit_record) => {
-            let target = hit_record.p + hit_record.normal + random_in_unit_sphere();
+            let target = hit_record.p + hit_record.normal + random_in_hemisphere(hit_record.normal);
             0.5 * ray_color(&Ray::new(hit_record.p, target - hit_record.p), objects, depth - 1)
         },
         None => background_color(&ray),
