@@ -41,21 +41,21 @@ impl Vec3 {
     }
 }
 
-// pub fn random_bounded(min: f32, max: f32) -> Vec3 {
-//     Vec3 {
-//         x: random::random_double_bounded(min, max),
-//         y: random::random_double_bounded(min, max),
-//         z: random::random_double_bounded(min, max),
-//     }
-// }
+pub fn random_bounded(min: f32, max: f32) -> Vec3 {
+    Vec3 {
+        x: random::random_double_bounded(min, max),
+        y: random::random_double_bounded(min, max),
+        z: random::random_double_bounded(min, max),
+    }
+}
 
-// pub fn random_in_unit_sphere() -> Vec3 {
-//     loop {
-//         let p = random_bounded(-1.0, 1.0);
-//         if p.length_squared() >= 1.0 { continue };
-//         return p;
-//     }
-// }
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = random_bounded(-1.0, 1.0);
+        if p.length_squared() >= 1.0 { continue };
+        return p;
+    }
+}
 
 // Lambertian distribution
 pub fn random_unit_vector() -> Vec3 {
