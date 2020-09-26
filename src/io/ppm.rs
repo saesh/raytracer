@@ -6,12 +6,12 @@ pub fn write_header(image_width: i32, image_height: i32) {
 }
 
 pub fn write_pixel(color: Color, samples_per_pixel: i32) {
-    // Divide the color by the number of samples.
+    // Divide the color by the number of samples and gamma-correct for gamma=2.0.
     let scale = 1.0 / samples_per_pixel as f32;
 
-    let r = color.r * scale;
-    let g = color.g * scale;
-    let b = color.b * scale;
+    let r = (color.r * scale).sqrt();
+    let g = (color.g * scale).sqrt();
+    let b = (color.b * scale).sqrt();
 
     println!("{} {} {}", 
         (256.0 * clamp(r, 0.0, 0.999)) as i32,
