@@ -1,6 +1,6 @@
 CARGO=cargo
 CONVERT=convert
-SCENE?=sphere
+SCENE?=spheres
 IMAGE_NAME=$(SCENE)
 TARGET_DIR=out
 

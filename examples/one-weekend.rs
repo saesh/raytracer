@@ -12,10 +12,10 @@ use raytracer::run;
 
 fn main() {
     // image
-    const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    let image_width: i32 = 400;
+    const ASPECT_RATIO: f32 = 3.0 / 2.0;
+    let image_width: i32 = 820;
     let image_height: i32 = (image_width as f32 / ASPECT_RATIO) as i32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 1000;
     let max_depth = 50;
 
     // camera
