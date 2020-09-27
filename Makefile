@@ -1,8 +1,19 @@
 CARGO=cargo
 CONVERT=convert
-IMAGE_NAME=image
+SCENE?=sphere
+IMAGE_NAME=$(SCENE)
+TARGET_DIR=out
 
-image:
-	@$(CARGO) run > $(IMAGE_NAME).ppm
-	@$(CONVERT) $(IMAGE_NAME).ppm $(IMAGE_NAME).png
-	@rm $(IMAGE_NAME).ppm
+build:
+	@$(CARGO) build
+
+release:
+	@$(CARGO) build --release
+
+test:
+	@$(CARGO) test
+
+image: release
+	@$(CARGO) run --release --example $(SCENE) > $(TARGET_DIR)/$(IMAGE_NAME).ppm
+	@$(CONVERT) $(TARGET_DIR)/$(IMAGE_NAME).ppm $(TARGET_DIR)/$(IMAGE_NAME).png
+	@rm $(TARGET_DIR)/$(IMAGE_NAME).ppm

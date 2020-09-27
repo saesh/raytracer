@@ -3,7 +3,7 @@ use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
 use crate::structures::color::{Color, WHITE};
 use crate::structures::vec3::{random_unit_vector, random_in_unit_sphere};
-use crate::random::random_double;
+use crate::io::random::random_double;
 
 use dyn_clone::DynClone;
 

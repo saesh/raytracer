@@ -1,5 +1,3 @@
-extern crate tobj;
-
 use std::convert::TryFrom;
 
 use crate::geometry::triangle::Triangle;
