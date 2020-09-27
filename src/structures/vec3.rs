@@ -24,11 +24,11 @@ impl Vec3 {
         return self.x * a.x + self.y * a.y + self.z * a.z;
     }
 
-    pub fn cross(a: &Vec3, b: &Vec3) -> Vec3 {
+    pub fn cross(&self, b: &Vec3) -> Vec3 {
         Vec3 {
-            x: a.y * b.z - a.z * b.y,
-            y: a.z * b.x - a.x * b.z,
-            z: a.x * b.y - a.y * b.x,
+            x: self.y * b.z - self.z * b.y,
+            y: self.z * b.x - self.x * b.z,
+            z: self.x * b.y - self.y * b.x,
         }
     }
 

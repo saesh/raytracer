@@ -19,8 +19,8 @@ impl Camera {
         let viewport_width = aspect_ratio * viewport_height;
 
         let w = (lookfrom - lookat).normalize();
-        let u = Vec3::cross(&vup, &w).normalize();
-        let v = Vec3::cross(&w, &u);
+        let u = vup.cross(&w).normalize();
+        let v = w.cross(&u);
 
         let origin = lookfrom;
         let horizontal = focus_dist * viewport_width * u;
