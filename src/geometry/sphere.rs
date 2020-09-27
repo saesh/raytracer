@@ -25,7 +25,7 @@ impl Hittable for Sphere {
         // optimized version of the quadratic formular components
         // see: https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects/simplifyingtheray-sphereintersectioncode
         let a = &ray.direction.length_squared();
-        let half_b = Vec3::dot(&oc, &ray.direction);
+        let half_b = oc.dot(&ray.direction);
         let c = oc.length_squared() - self.radius*self.radius;
         let discriminant = half_b*half_b - a*c;
     

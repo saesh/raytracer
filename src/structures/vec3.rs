@@ -20,8 +20,8 @@ impl Vec3 {
         x: 0.0, y: 0.0, z: 0.0
     };
 
-    pub fn dot(a: &Vec3, b: &Vec3) -> f32 {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+    pub fn dot(&self, a: &Vec3) -> f32 {
+        return self.x * a.x + self.y * a.y + self.z * a.z;
     }
 
     pub fn cross(a: &Vec3, b: &Vec3) -> Vec3 {
@@ -45,11 +45,11 @@ impl Vec3 {
     }
 
     pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-        return v - 2.0 * Vec3::dot(v, n) * n;
+        return v - 2.0 * v.dot(n) * n;
     }
 
     pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f32) -> Vec3 {
-        let cos_theta = Vec3::dot(&(-1.0 * uv), n);
+        let cos_theta = (-1.0 * uv).dot(n);
         let r_out_perp = etai_over_etat * (uv + cos_theta * n);
         let r_out_parallel = -1.0 * (1.0 - r_out_perp.length_squared()).abs().sqrt() * n;
         return r_out_perp + r_out_parallel;
@@ -234,7 +234,7 @@ mod tests {
         let a = Vec3::new(1.0, 2.0, 3.0);
         let b = Vec3::new(4.0, 5.0, 6.0);
 
-        assert_eq!(Vec3::dot(&a, &b), 1.0 * 4.0 + 2.0 * 5.0 + 3.0 * 6.0);
+        assert_eq!(a.dot(&b), 1.0 * 4.0 + 2.0 * 5.0 + 3.0 * 6.0);
     }
 
     #[test]

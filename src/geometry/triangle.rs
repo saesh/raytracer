@@ -29,7 +29,7 @@ impl Hittable for Triangle {
         let edge2 = self.vertex2 - self.vertex0;
 
         let h = Vec3::cross(&ray.direction, &edge2);
-        let a = Vec3::dot(&edge1, &h);
+        let a = edge1.dot(&h);
 
         if a > -EPSILON && a < EPSILON {
             return None;
@@ -37,20 +37,20 @@ impl Hittable for Triangle {
 
         let f = 1.0 / a;
         let s = ray.origin - self.vertex0;
-        let u = f * Vec3::dot(&s, &h);
+        let u = f * s.dot(&h);
 
         if u < 0.0 || u > 1.0 {
             return None;
         }
 
         let q = Vec3::cross(&s, &edge1);
-        let v = f * Vec3::dot(&ray.direction, &q);
+        let v = f * ray.direction.dot(&q);
 
         if v < 0.0 || u + v > 1.0 {
             return None;
         }
 
-        let t = f * Vec3::dot(&edge2, &q);
+        let t = f * edge2.dot(&q);
         if t < t_max && t > t_min {
             let hit_point = ray.at(t);
             let normal = Vec3::cross(&edge1, &edge2).normalize();

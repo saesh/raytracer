@@ -51,7 +51,7 @@ impl Material for Metal {
         let reflected = Vec3::reflect(&ray_in.direction.normalize(), &hit_record.normal);
         let scattered_ray = Ray::new(hit_record.p, reflected + self.fuzz * random_in_unit_sphere());
 
-        if Vec3::dot(&scattered_ray.direction, &hit_record.normal) > 0.0 {
+        if scattered_ray.direction.dot(&hit_record.normal) > 0.0 {
             return Some((self.albedo, scattered_ray))
         } else {
             return None
@@ -75,7 +75,7 @@ impl Material for Dielectric {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
         let etai_over_etat = if hit_record.front_face { 1.0 / self.ref_idx } else { self.ref_idx };
         let unit_direction = ray_in.direction.normalize();
-        let cos_theta = Vec3::dot(&(-1.0 * unit_direction), &hit_record.normal);
+        let cos_theta = (-1.0 * unit_direction).dot(&hit_record.normal);
         let cos_theta = if cos_theta < 1.0 { cos_theta } else { 1.0 };
         let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
         let reflect_prob = schlick(cos_theta, etai_over_etat);

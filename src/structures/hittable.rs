@@ -16,7 +16,7 @@ pub struct HitRecord {
 
 impl HitRecord {
     pub fn new(p: Vec3, t: f32, ray: &Ray, outward_normal: &Vec3, material: Box<dyn Material>) -> HitRecord {
-        let front_face = Vec3::dot(&ray.direction, outward_normal) < 0.0;
+        let front_face = ray.direction.dot(outward_normal) < 0.0;
 
         HitRecord {
             p: p,
