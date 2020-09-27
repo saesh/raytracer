@@ -1,7 +1,7 @@
 use crate::structures::hittable::{Hittable, HitRecord};
 use crate::structures::vec3::Vec3;
 use crate::structures::ray::Ray;
-use crate::structures::material::Material;
+use crate::materials::material::Material;
 
 const EPSILON: f32 = 0.0000001;
 

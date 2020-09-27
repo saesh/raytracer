@@ -1,10 +1,11 @@
 extern crate raytracer;
 
-use raytracer::geometry::sphere::Sphere;
+use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::{Color};
 use raytracer::structures::hittable::{Hittable};
-use raytracer::structures::material::{Lambertian, Metal};
+use raytracer::materials::lambertian::Lambertian;
+use raytracer::materials::metal::Metal;
 use raytracer::structures::vec3::{Vec3};
 use raytracer::run;
 

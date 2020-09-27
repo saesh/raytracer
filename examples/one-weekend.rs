@@ -1,12 +1,14 @@
 extern crate raytracer;
 
 use raytracer::io::random;
-use raytracer::geometry::sphere::Sphere;
-use raytracer::geometry::moving_sphere::MovingSphere;
+use raytracer::objects::sphere::Sphere;
+use raytracer::objects::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::{Color};
 use raytracer::structures::hittable::{Hittable};
-use raytracer::structures::material::{Lambertian, Metal, Dielectric};
+use raytracer::materials::dielectric::Dielectric;
+use raytracer::materials::lambertian::Lambertian;
+use raytracer::materials::metal::Metal;
 use raytracer::structures::vec3::{Vec3};
 use raytracer::run;
 

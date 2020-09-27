@@ -3,7 +3,8 @@ extern crate rand;
 extern crate tobj;
 
 pub mod io;
-pub mod geometry;
+pub mod materials;
+pub mod objects;
 pub mod structures;
 
 use std::f32::{INFINITY};

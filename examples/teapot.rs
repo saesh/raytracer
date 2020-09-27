@@ -1,11 +1,11 @@
 extern crate raytracer;
 
 use raytracer::io::obj::load_teapot;
-use raytracer::geometry::sphere::Sphere;
+use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::*;
-use raytracer::structures::hittable::{Hittable};
-use raytracer::structures::material::{Lambertian};
+use raytracer::structures::hittable::Hittable;
+use raytracer::materials::lambertian::Lambertian;
 use raytracer::structures::vec3::*;
 use raytracer::run;
 

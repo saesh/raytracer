@@ -1,8 +1,8 @@
 use std::convert::TryFrom;
 
-use crate::geometry::triangle::Triangle;
+use crate::objects::triangle::Triangle;
 use crate::structures::color::Color;
-use crate::structures::material::{Metal};
+use crate::materials::metal::{Metal};
 use crate::structures::vec3::Vec3;
 
 // TODO: load any file
