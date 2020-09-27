@@ -1,5 +1,5 @@
 [package]
-name = "raytracer-weekend"
+name = "raytracer"
 version = "0.1.0"
 authors = ["Sascha Hagedorn <mail@shagedorn.net>"]
 edition = "2018"

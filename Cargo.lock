@@ -68,7 +68,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "raytracer-weekend"
+name = "raytracer"
 version = "0.1.0"
 dependencies = [
  "dyn-clone 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
