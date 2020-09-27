@@ -13,7 +13,7 @@ release:
 test:
 	@$(CARGO) test
 
-image: release
+image:
 	@$(CARGO) run --release --example $(SCENE) > $(TARGET_DIR)/$(IMAGE_NAME).ppm
 	@$(CONVERT) $(TARGET_DIR)/$(IMAGE_NAME).ppm $(TARGET_DIR)/$(IMAGE_NAME).png
 	@rm $(TARGET_DIR)/$(IMAGE_NAME).ppm
