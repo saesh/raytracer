@@ -1,4 +1,5 @@
 mod io;
+mod geometry;
 mod structures;
 
 use std::time::{Instant};
@@ -6,9 +7,10 @@ use std::f32::{INFINITY};
 
 use io::ppm;
 use io::random;
+use io::obj::load_teapot;
+use geometry::sphere::Sphere;
 use structures::camera::Camera;
 use structures::color::*;
-use structures::geometry::Sphere;
 use structures::hittable::{Hittable, HitRecord};
 use structures::ray::Ray;
 use structures::vec3::*;
@@ -43,45 +45,54 @@ fn main() {
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
 
+    match load_teapot() {
+        Some(triangles) => {
+            for triangle in triangles {
+                objects.push(Box::new(triangle));
+            }
+        },
+        None => {}
+    };
+
     let material_ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
     objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, Box::new(material_ground))));
 
-    for a in -11..11 {
+    // for a in -11..11 {
         
-        for b in -11..11 {
+    //     for b in -11..11 {
         
-            let choose_mat = random::random_double();
-            let center = Vec3::new(a as f32 + 0.9 * random::random_double(), 0.2, b as f32 + 0.9 * random::random_double());
+    //         let choose_mat = random::random_double();
+    //         let center = Vec3::new(a as f32 + 0.9 * random::random_double(), 0.2, b as f32 + 0.9 * random::random_double());
             
-            if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+    //         if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
 
-                if choose_mat < 0.8 {
-                    // diffuse
-                    let albedo = Color::random() * Color::random();
-                    let sphere_material = Lambertian::new(albedo);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
-                } else if choose_mat < 0.95 {
-                    // metal
-                    let albedo = Color::random_bounded(0.5, 1.0);
-                    let fuzz = random::random_double_bounded(0.0, 0.5);
-                    let sphere_material = Metal::new(albedo, fuzz);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
-                } else {
-                    // glass
-                    let sphere_material = Dielectric::new(1.5);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
-                }
-            }
-        }
-    }
-    let material1 = Dielectric::new(1.5);
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, Box::new(material1))));
+    //             if choose_mat < 0.8 {
+    //                 // diffuse
+    //                 let albedo = Color::random() * Color::random();
+    //                 let sphere_material = Lambertian::new(albedo);
+    //                 objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+    //             } else if choose_mat < 0.95 {
+    //                 // metal
+    //                 let albedo = Color::random_bounded(0.5, 1.0);
+    //                 let fuzz = random::random_double_bounded(0.0, 0.5);
+    //                 let sphere_material = Metal::new(albedo, fuzz);
+    //                 objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+    //             } else {
+    //                 // glass
+    //                 let sphere_material = Dielectric::new(1.5);
+    //                 objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+    //             }
+    //         }
+    //     }
+    // }
+    // let material1 = Dielectric::new(1.5);
+    // objects.push(Box::new(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, Box::new(material1))));
 
-    let material2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
-    objects.push(Box::new(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, Box::new(material2))));
+    // let material2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
+    // objects.push(Box::new(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, Box::new(material2))));
 
-    let material3  = Metal::new(Color::new(0.7, 0.6, 0.5), 0.0);
-    objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, Box::new(material3))));
+    // let material3  = Metal::new(Color::new(0.7, 0.6, 0.5), 0.0);
+    // objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, Box::new(material3))));
 
     // render
     eprintln!("Image size: {} x {}, {} pixels", image_width, image_height, image_width * image_height);
