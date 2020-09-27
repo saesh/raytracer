@@ -1,3 +1,4 @@
+use crate::io::random::random_double_bounded;
 use crate::structures::ray::Ray;
 use crate::structures::vec3::{Vec3, random_in_unit_disc};
 
@@ -9,10 +10,12 @@ pub struct Camera {
     lens_radius: f32,
     u: Vec3,
     v: Vec3,
+    pub time0: f32,
+    pub time1: f32,
 }
 
 impl Camera {
-    pub fn new(lookfrom: Vec3, lookat: Vec3, vup: Vec3, vfov: f32, aspect_ratio: f32, aperture: f32, focus_dist: f32) -> Camera {
+    pub fn new(lookfrom: Vec3, lookat: Vec3, vup: Vec3, vfov: f32, aspect_ratio: f32, aperture: f32, focus_dist: f32, time0: f32, time1: f32) -> Camera {
         let theta = vfov.to_radians();
         let h = (theta / 2.0).tan();
         let viewport_height = 2.0 * h;
@@ -36,6 +39,8 @@ impl Camera {
             lens_radius: lens_radius,
             u: u,
             v: v,
+            time0: time0,
+            time1: time1,
         }
     }
 
@@ -44,6 +49,8 @@ impl Camera {
         let offset = self.u * rd.x + self.v * rd.y;
         Ray::new(
             self.origin + offset, 
-            self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin - offset)
+            self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin - offset,
+            random_double_bounded(self.time0, self.time1)
+        )
     }
 }

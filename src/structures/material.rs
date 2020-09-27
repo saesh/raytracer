@@ -26,9 +26,9 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
+    fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
         let scatter_direction = hit_record.normal + random_unit_vector();
-        let scattered_ray = Ray::new(hit_record.p, scatter_direction);
+        let scattered_ray = Ray::new(hit_record.p, scatter_direction, ray_in.time);
         return Some((self.albedo, scattered_ray))
     }
 }
@@ -49,7 +49,7 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
         let reflected = Vec3::reflect(&ray_in.direction.normalize(), &hit_record.normal);
-        let scattered_ray = Ray::new(hit_record.p, reflected + self.fuzz * random_in_unit_sphere());
+        let scattered_ray = Ray::new(hit_record.p, reflected + self.fuzz * random_in_unit_sphere(), ray_in.time);
 
         if scattered_ray.direction.dot(&hit_record.normal) > 0.0 {
             return Some((self.albedo, scattered_ray))
@@ -82,15 +82,15 @@ impl Material for Dielectric {
 
         if etai_over_etat * sin_theta > 1.0 {
             let reflected = Vec3::reflect(&unit_direction, &hit_record.normal);
-            let scattered_ray = Ray::new(hit_record.p, reflected);
+            let scattered_ray = Ray::new(hit_record.p, reflected, ray_in.time);
             return Some((WHITE, scattered_ray))
         } else if random_double() < reflect_prob {
             let reflected = Vec3::reflect(&unit_direction, &hit_record.normal);
-            let scattered_ray = Ray::new(hit_record.p, reflected);
+            let scattered_ray = Ray::new(hit_record.p, reflected, ray_in.time);
             return Some((WHITE, scattered_ray));
         } else {
             let refracted = Vec3::refract(&unit_direction, &hit_record.normal, etai_over_etat);
-            let scattered_ray = Ray::new(hit_record.p, refracted);
+            let scattered_ray = Ray::new(hit_record.p, refracted, ray_in.time);
             return Some((WHITE, scattered_ray))
         }
     }

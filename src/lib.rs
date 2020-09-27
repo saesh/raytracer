@@ -23,12 +23,13 @@ pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, im
     eprintln!("Samples per pixel: {}", samples_per_pixel);
     eprintln!("Maximum ray bounces: {}", max_depth);
     eprintln!("Geometries in scene: {}", objects.len());
+    eprintln!("Shutter speed: {}s", camera.time1 - camera.time0);
 
     ppm::write_header(image_width, image_height);
 
     for pixel_y in (0..image_height).rev() {
 
-        eprint!("\rScanlines remaining: {} (elapsed: {:?})", pixel_y, start.elapsed());
+        eprint!("\rScanlines remaining: {}/{} (elapsed: {:?})", pixel_y, image_height, start.elapsed());
 
         for pixel_x in 0..image_width {
 

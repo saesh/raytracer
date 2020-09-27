@@ -2,6 +2,7 @@ extern crate raytracer;
 
 use raytracer::io::random;
 use raytracer::geometry::sphere::Sphere;
+use raytracer::geometry::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::{Color};
 use raytracer::structures::hittable::{Hittable};
@@ -11,10 +12,10 @@ use raytracer::run;
 
 fn main() {
     // image
-    const ASPECT_RATIO: f32 = 3.0 / 2.0;
-    let image_width: i32 = 500;
+    const ASPECT_RATIO: f32 = 16.0 / 9.0;
+    let image_width: i32 = 400;
     let image_height: i32 = (image_width as f32 / ASPECT_RATIO) as i32;
-    let samples_per_pixel = 300;
+    let samples_per_pixel = 100;
     let max_depth = 50;
 
     // camera
@@ -31,7 +32,9 @@ fn main() {
         20.0, 
         ASPECT_RATIO,
         aperture,
-        dist_to_focus);
+        dist_to_focus,
+        0.0,
+        1.0);
 
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
@@ -52,7 +55,10 @@ fn main() {
                     // diffuse
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Lambertian::new(albedo);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+
+                    let center2 = center + Vec3::new(0.0, random::random_double_bounded(0.0, 0.5), 0.0);
+
+                    objects.push(Box::new(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, Box::new(sphere_material))));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_bounded(0.5, 1.0);

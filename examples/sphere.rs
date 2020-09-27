@@ -31,7 +31,9 @@ fn main() {
         20.0, 
         ASPECT_RATIO,
         aperture,
-        dist_to_focus);
+        dist_to_focus,
+        0.0,
+        0.1);
 
     // world
     let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
