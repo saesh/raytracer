@@ -4,7 +4,7 @@ use crate::structures::ray::Ray;
 
 use dyn_clone::DynClone;
 
-pub trait Material: DynClone {
+pub trait Material: DynClone + Sync {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)>;
 }
 

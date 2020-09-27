@@ -17,6 +17,8 @@ use crate::structures::hittable::{Hittable, HitRecord};
 use crate::structures::color::{Color, BLACK, WHITE, linear_blend};
 use crate::structures::ray::Ray;
 
+use rayon::prelude::*;
+
 pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
     let start = Instant::now();
 
@@ -34,14 +36,13 @@ pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, im
 
         for pixel_x in 0..image_width {
 
-            let mut pixel_color = BLACK;
-
-            for _s in 0..samples_per_pixel {
+            let pixel_color = (0..samples_per_pixel).into_par_iter().map(|_x| {
                 let u: f32 = (pixel_x as f32 + random::random_double()) / (image_width as f32 - 1.0);
                 let v: f32 = (pixel_y as f32 + random::random_double()) / (image_height as f32 - 1.0);
                 let ray = camera.get_ray(u, v);
-                pixel_color = pixel_color + ray_color(&ray, &objects, max_depth);
-            }
+                ray_color(&ray, &objects, max_depth)
+            })
+            .reduce(|| BLACK, |final_color, next_color| final_color + next_color);
 
             let final_color = map_color_256(gamma_correct(sample(pixel_color, samples_per_pixel)));
             ppm::write_pixel(final_color.0, final_color.1, final_color.2);

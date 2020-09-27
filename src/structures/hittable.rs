@@ -2,7 +2,7 @@ use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
 use crate::materials::material::Material;
 
-pub trait Hittable {
+pub trait Hittable: Sync {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
 }
 

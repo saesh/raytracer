@@ -9,3 +9,5 @@ So far all the features from the first book are implemented. From the second boo
 ![One Weekend scene](out/one-weekend.png "Example image of the One Weekend scene")
 
 Additionally the ray tracer supports loading of 3D models from `obj` files.
+
+Computation of samples per pixel are parallelized using [rayon](https://crates.io/crates/rayon).
