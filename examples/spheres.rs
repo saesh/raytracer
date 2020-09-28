@@ -1,12 +1,14 @@
 extern crate raytracer;
 
+use std::sync::Arc;
+
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::{Color};
-use raytracer::structures::hittable::{Hittable};
-use raytracer::materials::lambertian::Lambertian;
-use raytracer::materials::metal::Metal;
-use raytracer::structures::vec3::{Vec3};
+use raytracer::objects::Hitable;
+use raytracer::materials::Lambertian;
+use raytracer::materials::Metal;
+use raytracer::structures::vec3::Vec3;
 use raytracer::run;
 
 fn main() {
@@ -36,19 +38,19 @@ fn main() {
         0.1);
 
     // world
-    let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
+    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
 
-    let material_ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, Box::new(material_ground))));
+    let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
 
-    let gold = Metal::new(Color::new(1.0, 0.84, 0.0), 0.1);
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, Box::new(gold))));
+    let gold = Arc::new(Metal::new(Color::new(1.0, 0.84, 0.0), 0.1));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold)));
 
-    let green = Metal::new(Color::new(0.2, 0.8, 0.5), 0.8);
-    objects.push(Box::new(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, Box::new(green))));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, Box::new(green))));
-    objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, Box::new(green))));
+    let green = Arc::new(Metal::new(Color::new(0.2, 0.8, 0.5), 0.8));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone())));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone())));
+    objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
 
     // render
-    run(camera, objects, image_width, image_height, samples_per_pixel, max_depth);
+    run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
 }

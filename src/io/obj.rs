@@ -1,8 +1,9 @@
 use std::convert::TryFrom;
+use std::sync::Arc;
 
 use crate::objects::triangle::Triangle;
 use crate::structures::color::Color;
-use crate::materials::metal::{Metal};
+use crate::materials::Metal;
 use crate::structures::vec3::Vec3;
 
 // TODO: load any file
@@ -14,8 +15,6 @@ pub fn load_teapot() -> Option<Vec<Triangle>> {
     let (models, _) = tobj::load_obj(&path, false).expect("Failed to load file");
     eprintln!("Loaded {}, found {} models", path, models.len());
     assert!(models.len() == 1);
-
-    let material = Metal::new(Color::new(0.5, 0.5, 0.5), 0.5);
     
     let mut triangles: Vec<Triangle> = Vec::new();
 
@@ -48,7 +47,7 @@ pub fn load_teapot() -> Option<Vec<Triangle>> {
             let p3z = mesh.positions[3 * v3_idx + 2];
             let v2 = Vec3::new(p3x, p3y, p3z);
 
-            triangles.push(Triangle::new(v0, v1, v2, Box::new(material)));
+            triangles.push(Triangle::new(v0, v1, v2, Arc::new(Metal::new(Color::new(0.5, 0.5, 0.5), 0.5))));
 
             next_face = end;
         }

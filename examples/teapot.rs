@@ -1,11 +1,13 @@
 extern crate raytracer;
 
+use std::sync::Arc;
+
 use raytracer::io::obj::load_teapot;
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::structures::color::*;
-use raytracer::structures::hittable::Hittable;
-use raytracer::materials::lambertian::Lambertian;
+use raytracer::objects::Hitable;
+use raytracer::materials::Lambertian;
 use raytracer::structures::vec3::*;
 use raytracer::run;
 
@@ -36,15 +38,15 @@ fn main() {
         0.1);
 
     // world
-    let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
+    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
 
     match load_teapot() {
         Some(triangles) => { for triangle in triangles { objects.push(Box::new(triangle)) }},
         None => {}
     };
 
-    let material_ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, Box::new(material_ground))));
+    let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
 
-    run(camera, objects, image_width, image_height, samples_per_pixel, max_depth);   
+    run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);   
 }

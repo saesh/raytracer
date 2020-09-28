@@ -1,7 +1,9 @@
-use crate::structures::hittable::{Hittable, HitRecord};
+use std::sync::Arc;
+
+use crate::objects::{Hitable, HitRecord};
 use crate::structures::vec3::Vec3;
 use crate::structures::ray::Ray;
-use crate::materials::material::Material;
+use crate::materials::Material;
 
 const EPSILON: f32 = 0.0000001;
 
@@ -9,20 +11,16 @@ pub struct Triangle {
     vertex0: Vec3,
     vertex1: Vec3,
     vertex2: Vec3,
-    material: Box<dyn Material>,
+    material: Arc<dyn Material>,
 }
 
 impl Triangle {
-    pub fn new(vertex0: Vec3, vertex1: Vec3, vertex2: Vec3, material: Box<dyn Material>) -> Triangle {
+    pub fn new(vertex0: Vec3, vertex1: Vec3, vertex2: Vec3, material: Arc<dyn Material>) -> Self {
         Triangle {vertex0: vertex0, vertex1: vertex1, vertex2: vertex2, material: material}
-    }
-
-    pub fn material(&self) -> Box<dyn Material> {
-        return dyn_clone::clone_box(&*self.material);
     }
 }
 
-impl Hittable for Triangle {
+impl Hitable for Triangle {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
          
         let edge1 = self.vertex1 - self.vertex0;
@@ -56,7 +54,7 @@ impl Hittable for Triangle {
             let normal = edge1.cross(&edge2).normalize();
 
             return Some(
-                HitRecord::new(hit_point, t, ray, &normal, self.material())
+                HitRecord::new(hit_point, t, ray, &normal, &*self.material)
             );
         }
 

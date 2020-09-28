@@ -1,14 +1,16 @@
 extern crate raytracer;
 
+use std::sync::Arc;
+
 use raytracer::io::random;
 use raytracer::objects::sphere::Sphere;
 use raytracer::objects::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
-use raytracer::structures::color::{Color};
-use raytracer::structures::hittable::{Hittable};
-use raytracer::materials::dielectric::Dielectric;
-use raytracer::materials::lambertian::Lambertian;
-use raytracer::materials::metal::Metal;
+use raytracer::structures::color::Color;
+use raytracer::objects::Hitable;
+use raytracer::materials::Dielectric;
+use raytracer::materials::Lambertian;
+use raytracer::materials::Metal;
 use raytracer::structures::vec3::{Vec3};
 use raytracer::run;
 
@@ -39,10 +41,10 @@ fn main() {
         1.0);
 
     // world
-    let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
+    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
 
-    let material_ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, Box::new(material_ground))));
+    let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
 
     for a in -11..11 {
         
@@ -56,34 +58,34 @@ fn main() {
                 if choose_mat < 0.8 {
                     // diffuse
                     let albedo = Color::random() * Color::random();
-                    let sphere_material = Lambertian::new(albedo);
+                    let sphere_material = Arc::new(Lambertian::new(albedo));
 
                     let center2 = center + Vec3::new(0.0, random::random_double_bounded(0.0, 0.5), 0.0);
 
-                    objects.push(Box::new(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, Box::new(sphere_material))));
+                    objects.push(Box::new(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, sphere_material)));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_bounded(0.5, 1.0);
                     let fuzz = random::random_double_bounded(0.0, 0.5);
-                    let sphere_material = Metal::new(albedo, fuzz);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+                    let sphere_material = Arc::new(Metal::new(albedo, fuzz));
+                    objects.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
                 } else {
                     // glass
-                    let sphere_material = Dielectric::new(1.5);
-                    objects.push(Box::new(Sphere::new(center, 0.2, Box::new(sphere_material))));
+                    let sphere_material = Arc::new(Dielectric::new(1.5));
+                    objects.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
                 }
             }
         }
     }
-    let material1 = Dielectric::new(1.5);
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, Box::new(material1))));
+    let material1 = Arc::new(Dielectric::new(1.5));
+    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, material1)));
 
-    let material2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
-    objects.push(Box::new(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, Box::new(material2))));
+    let material2 = Arc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
+    objects.push(Box::new(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, material2)));
 
-    let material3  = Metal::new(Color::new(0.7, 0.6, 0.5), 0.0);
-    objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, Box::new(material3))));
+    let material3  = Arc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
+    objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3)));
 
     // render
-    run(camera, objects, image_width, image_height, samples_per_pixel, max_depth);
+    run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
 }

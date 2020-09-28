@@ -1,24 +1,22 @@
-use crate::structures::hittable::{Hittable, HitRecord};
+use std::sync::Arc;
+
+use crate::objects::{Hitable, HitRecord};
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
-use crate::materials::material::Material;
+use crate::materials::Material;
 
 pub struct MovingSphere {
     pub center0: Vec3,
     pub center1: Vec3,
     pub radius: f32,
-    pub material: Box<dyn Material>,
+    pub material: Arc<dyn Material>,
     pub time0: f32,
     pub time1: f32,
 }
 
 impl MovingSphere {
-    pub fn new(center0: Vec3, center1: Vec3, time0: f32, time1: f32,  radius: f32, material: Box<dyn Material>) -> MovingSphere {
+    pub fn new(center0: Vec3, center1: Vec3, time0: f32, time1: f32,  radius: f32, material: Arc<dyn Material>) -> Self {
         MovingSphere {center0: center0, center1: center1, time0: time0, time1: time1, radius: radius, material: material}
-    }
-
-    pub fn material(&self) -> Box<dyn Material> {
-        return dyn_clone::clone_box(&*self.material);
     }
 
     pub fn center(&self, time: f32) -> Vec3 {
@@ -26,7 +24,7 @@ impl MovingSphere {
     }
 }
 
-impl Hittable for MovingSphere {
+impl Hitable for MovingSphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let oc = ray.origin - self.center(ray.time);
         // optimized version of the quadratic formular components
@@ -46,7 +44,7 @@ impl Hittable for MovingSphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center(ray.time)) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             }
@@ -55,7 +53,7 @@ impl Hittable for MovingSphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center(ray.time)) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             } 

@@ -1,25 +1,23 @@
-use crate::structures::hittable::{Hittable, HitRecord};
+use std::sync::Arc;
+
+use crate::objects::{Hitable, HitRecord};
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
-use crate::materials::material::Material;
+use crate::materials::Material;
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
-    pub material: Box<dyn Material>,
+    pub material: Arc<dyn Material>,
 }
 
-impl Sphere {
-    pub fn new(center: Vec3, radius: f32, material: Box<dyn Material>) -> Sphere {
+impl Sphere{
+    pub fn new(center: Vec3, radius: f32, material: Arc<dyn Material>) -> Self {
         Sphere {center: center, radius: radius, material: material}
     }
-
-    pub fn material(&self) -> Box<dyn Material> {
-        return dyn_clone::clone_box(&*self.material);
-    }
 }
 
-impl Hittable for Sphere {
+impl Hitable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let oc = ray.origin - self.center;
         // optimized version of the quadratic formular components
@@ -39,7 +37,7 @@ impl Hittable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             }
@@ -48,7 +46,7 @@ impl Hittable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, self.material());
+                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             } 

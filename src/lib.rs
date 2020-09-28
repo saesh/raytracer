@@ -13,13 +13,13 @@ use std::time::{Instant};
 use crate::io::random;
 use crate::io::ppm;
 use crate::structures::camera::Camera;
-use crate::structures::hittable::{Hittable, HitRecord};
+use crate::objects::Hitable;
 use crate::structures::color::{Color, BLACK, WHITE, linear_blend};
 use crate::structures::ray::Ray;
 
 use rayon::prelude::*;
 
-pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
+pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
     let start = Instant::now();
 
     eprintln!("Image size: {} x {}, {} pixels", image_width, image_height, image_width * image_height);
@@ -52,12 +52,12 @@ pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, im
     eprintln!("\nDone in {:?}.", start.elapsed());
 }
 
-fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hittable>>, depth: i32) -> Color {
+fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hitable>>, depth: i32) -> Color {
     if depth <= 0 {
         return BLACK
     }
 
-    match hit_scene(ray, objects) {
+    match objects.hit(ray, 0.001, INFINITY) {
         Some(hit_record) => {
             return match hit_record.material.scatter(ray, &hit_record) {
                 Some((color, new_ray)) => color * ray_color(&new_ray, objects, depth - 1),
@@ -66,23 +66,6 @@ fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hittable>>, depth: i32) -> Color {
         },
         None => background_color(&ray),
     }
-}
-
-fn hit_scene(ray: &Ray, objects: &Vec<Box<dyn Hittable>>) -> Option<HitRecord> {
-    let mut closest_so_far = INFINITY;
-    let mut closest_hit_record: Option<HitRecord> = None;
-
-    for object in objects {
-        match object.hit(ray, 0.001, closest_so_far) {
-            Some(hit_record) => {
-                closest_so_far = hit_record.t;
-                closest_hit_record = Some(hit_record);
-            },
-            None => {}
-        }
-    }
-    
-    return closest_hit_record;
 }
 
 fn background_color(ray: &Ray) -> Color {
