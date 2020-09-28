@@ -1,5 +1,5 @@
 use crate::io::random::{random_double};
-use crate::structures::color::{Color, WHITE};
+use crate::color::{Color, WHITE};
 use crate::structures::ray::Ray;
 use crate::structures::vec3::{Vec3, random_in_unit_sphere, random_unit_vector};
 

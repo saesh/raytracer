@@ -2,6 +2,7 @@ extern crate dyn_clone;
 extern crate rand;
 extern crate tobj;
 
+pub mod color;
 pub mod io;
 pub mod materials;
 pub mod objects;
@@ -14,7 +15,7 @@ use crate::io::random;
 use crate::io::ppm;
 use crate::structures::camera::Camera;
 use crate::objects::Hitable;
-use crate::structures::color::{Color, BLACK, WHITE, linear_blend};
+use crate::color::{Color, BLACK, WHITE, linear_blend, gamma_correct, map_color_256};
 use crate::structures::ray::Ray;
 
 use rayon::prelude::*;
@@ -79,30 +80,4 @@ fn sample(color: Color, samples_per_pixel: i32) -> Color {
     let scale = 1.0 / samples_per_pixel as f32;
 
     return color * scale;
-}
-
-fn gamma_correct(color: Color) -> Color {
-    Color {
-        r: color.r.sqrt(),
-        g: color.g.sqrt(),
-        b: color.b.sqrt(),
-    }
-}
-fn map_color_256(color: Color) -> (i32, i32, i32) {
-    (
-        (256.0 * clamp(color.r, 0.0, 0.999)) as i32,
-        (256.0 * clamp(color.g, 0.0, 0.999)) as i32, 
-        (256.0 * clamp(color.b, 0.0, 0.999)) as i32,
-    )
-}
-
-#[inline]
-fn clamp(x: f32, min: f32, max: f32) -> f32 {
-    return if x < min { 
-        min 
-    } else if x > max {
-        max
-    } else {
-        x
-    };
 }

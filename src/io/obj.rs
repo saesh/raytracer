@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 use std::sync::Arc;
 
 use crate::objects::triangle::Triangle;
-use crate::structures::color::Color;
+use crate::color::Color;
 use crate::materials::Metal;
 use crate::structures::vec3::Vec3;
 

@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul};
 
-use crate::io::random;
+use crate::io::random::{random_double, random_double_bounded};
 
 #[derive(Copy, Clone)]
 pub struct Color {
@@ -16,17 +16,17 @@ impl Color {
 
     pub fn random() -> Color {
         Color {
-            r: random::random_double(),
-            g: random::random_double(),
-            b: random::random_double(),
+            r: random_double(),
+            g: random_double(),
+            b: random_double(),
         }
     }
 
     pub fn random_bounded(min: f32, max: f32) -> Color {
         Color {
-            r: random::random_double_bounded(min, max),
-            g: random::random_double_bounded(min, max),
-            b: random::random_double_bounded(min, max),
+            r: random_double_bounded(min, max),
+            g: random_double_bounded(min, max),
+            b: random_double_bounded(min, max),
         }
     }
 }
@@ -84,4 +84,31 @@ impl Mul<f32> for Color {
             b: self.b * _rhs,
         }
     }
+}
+
+pub fn gamma_correct(color: Color) -> Color {
+    Color {
+        r: color.r.sqrt(),
+        g: color.g.sqrt(),
+        b: color.b.sqrt(),
+    }
+}
+
+pub fn map_color_256(color: Color) -> (i32, i32, i32) {
+    (
+        (256.0 * clamp(color.r, 0.0, 0.999)) as i32,
+        (256.0 * clamp(color.g, 0.0, 0.999)) as i32, 
+        (256.0 * clamp(color.b, 0.0, 0.999)) as i32,
+    )
+}
+
+#[inline]
+fn clamp(x: f32, min: f32, max: f32) -> f32 {
+    return if x < min { 
+        min 
+    } else if x > max {
+        max
+    } else {
+        x
+    };
 }

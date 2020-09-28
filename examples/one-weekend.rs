@@ -6,7 +6,7 @@ use raytracer::io::random;
 use raytracer::objects::sphere::Sphere;
 use raytracer::objects::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
-use raytracer::structures::color::Color;
+use raytracer::color::Color;
 use raytracer::objects::Hitable;
 use raytracer::materials::Dielectric;
 use raytracer::materials::Lambertian;

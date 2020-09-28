@@ -5,7 +5,7 @@ use std::sync::Arc;
 use raytracer::io::obj::load_teapot;
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
-use raytracer::structures::color::*;
+use raytracer::color::*;
 use raytracer::objects::Hitable;
 use raytracer::materials::Lambertian;
 use raytracer::structures::vec3::*;
