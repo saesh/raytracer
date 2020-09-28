@@ -4,6 +4,8 @@ use crate::materials::material::Material;
 
 pub trait Hittable: Sync {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
+
+    fn size(&self) -> usize;
 }
 
 pub struct HitRecord {

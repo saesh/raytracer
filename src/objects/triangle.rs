@@ -62,4 +62,8 @@ impl Hittable for Triangle {
 
         return None;
     }
+
+    fn size(&self) -> usize {
+        1
+    }
 }

@@ -19,13 +19,13 @@ use crate::structures::ray::Ray;
 
 use rayon::prelude::*;
 
-pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
+pub fn run(camera: Camera, objects: &Vec<Box<dyn Hittable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
     let start = Instant::now();
 
     eprintln!("Image size: {} x {}, {} pixels", image_width, image_height, image_width * image_height);
     eprintln!("Samples per pixel: {}", samples_per_pixel);
     eprintln!("Maximum ray bounces: {}", max_depth);
-    eprintln!("Geometries in scene: {}", objects.len());
+    eprintln!("Geometries in scene: {}", objects.into_iter().map(|o| o.size()).sum::<usize>());
     eprintln!("Shutter speed: {}s", camera.time1 - camera.time0);
 
     ppm::write_header(image_width, image_height);
@@ -40,7 +40,7 @@ pub fn run(camera: Camera, objects: Vec<Box<dyn Hittable>>, image_width: i32, im
                 let u: f32 = (pixel_x as f32 + random::random_double()) / (image_width as f32 - 1.0);
                 let v: f32 = (pixel_y as f32 + random::random_double()) / (image_height as f32 - 1.0);
                 let ray = camera.get_ray(u, v);
-                ray_color(&ray, &objects, max_depth)
+                ray_color(&ray, objects, max_depth)
             })
             .reduce(|| BLACK, |final_color, next_color| final_color + next_color);
 

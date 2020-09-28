@@ -4,14 +4,21 @@ use crate::objects::triangle::Triangle;
 use crate::structures::color::Color;
 use crate::materials::metal::{Metal};
 use crate::structures::vec3::Vec3;
+use crate::objects::model::Model;
 
-// TODO: load any file
 // TODO: support more than one model
 // TODO: improve material assignment
-pub fn load_teapot() -> Option<Vec<Triangle>> {
-    let path = "files/teapot.obj";
 
-    let (models, _) = tobj::load_obj(&path, false).expect("Failed to load file");
+pub fn load_model_triangles(path: &str) -> Option<Vec<Triangle>> {
+    return match load_model(path) {
+        Some(model) => Some(model.triangles),
+        None => None
+    }
+}
+
+pub fn load_model(path: &str) -> Option<Model> {
+
+    let (models, _) = tobj::load_obj(path, false).expect("Failed to load file");
     eprintln!("Loaded {}, found {} models", path, models.len());
     assert!(models.len() == 1);
 
@@ -58,5 +65,5 @@ pub fn load_teapot() -> Option<Vec<Triangle>> {
         return None;
     }
 
-    return Some(triangles);
+    return Some(Model::new(triangles));
 }

@@ -50,5 +50,5 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, Box::new(green))));
 
     // render
-    run(camera, objects, image_width, image_height, samples_per_pixel, max_depth);
+    run(camera, &objects, image_width, image_height, samples_per_pixel, max_depth);
 }

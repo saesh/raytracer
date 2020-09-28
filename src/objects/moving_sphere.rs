@@ -63,4 +63,8 @@ impl Hittable for MovingSphere {
 
         return None;
     }
+
+    fn size(&self) -> usize {
+        1
+    }
 }
