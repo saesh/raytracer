@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul};
 
-use crate::io::random::{random_double, random_double_bounded};
+use crate::random::{random_double, random_double_bounded};
 
 #[derive(Copy, Clone)]
 pub struct Color {

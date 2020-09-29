@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub, Mul, Div};
 use std::f32::consts::PI;
 
-use crate::io::random::{random_double_bounded};
+use crate::random::random_double_bounded;
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {

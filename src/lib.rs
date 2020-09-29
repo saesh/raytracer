@@ -6,11 +6,12 @@ pub mod io;
 pub mod materials;
 pub mod objects;
 pub mod structures;
+pub mod random;
 
 use std::f32::{INFINITY};
 use std::time::{Instant};
 
-use crate::io::random;
+use crate::random::random_double;
 use crate::io::ppm;
 use crate::structures::camera::Camera;
 use crate::objects::Hitable;
@@ -37,8 +38,8 @@ pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32
         for pixel_x in 0..image_width {
 
             let pixel_color = (0..samples_per_pixel).into_par_iter().map(|_x| {
-                let u: f32 = (pixel_x as f32 + random::random_double()) / (image_width as f32 - 1.0);
-                let v: f32 = (pixel_y as f32 + random::random_double()) / (image_height as f32 - 1.0);
+                let u: f32 = (pixel_x as f32 + random_double()) / (image_width as f32 - 1.0);
+                let v: f32 = (pixel_y as f32 + random_double()) / (image_height as f32 - 1.0);
                 let ray = camera.get_ray(u, v);
                 ray_color(&ray, &objects, max_depth)
             })

@@ -1,4 +1,4 @@
-use crate::io::random::random_double_bounded;
+use crate::random::random_double_bounded;
 use crate::structures::ray::Ray;
 use crate::structures::vec3::{Vec3, random_in_unit_disc};
 
