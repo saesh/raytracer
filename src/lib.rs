@@ -20,7 +20,7 @@ use crate::structures::ray::Ray;
 use indicatif::{ProgressBar, ProgressStyle, HumanDuration};
 use rayon::prelude::*;
 
-pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: u32, image_height: u32, samples_per_pixel: u32, max_depth: u32) -> Vec<u8> {
+pub fn render(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: u32, image_height: u32, samples_per_pixel: u32, max_depth: u32) -> Vec<u8> {
 
     let start = Instant::now();
     let pixel_total = image_width * image_height;

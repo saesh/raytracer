@@ -12,7 +12,7 @@ use raytracer::materials::Dielectric;
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
-use raytracer::run;
+use raytracer::render;
 use raytracer::io::png;
 
 fn main() {
@@ -88,6 +88,6 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3)));
 
     // render
-    let image_data = run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
     png::write_png("out/one-weekend.png", image_width, image_width, &image_data);
 }

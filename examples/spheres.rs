@@ -9,7 +9,7 @@ use raytracer::objects::Hitable;
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
-use raytracer::run;
+use raytracer::render;
 use raytracer::io::png;
 
 fn main() {
@@ -53,6 +53,6 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
 
     // render
-    let image_data = run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
     png::write_png("out/spheres.png", image_width, image_height, &image_data);
 }

@@ -10,7 +10,7 @@ use raytracer::color::*;
 use raytracer::objects::Hitable;
 use raytracer::materials::Lambertian;
 use raytracer::structures::vec3::*;
-use raytracer::run;
+use raytracer::render;
 
 fn main() {
     // image
@@ -49,7 +49,7 @@ fn main() {
     let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
 
-    let image_data = run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
     
     png::write_png("out/teapot.png", image_width, image_width, &image_data);
 }
