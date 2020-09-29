@@ -20,6 +20,17 @@ impl Vec3 {
         x: 0.0, y: 0.0, z: 0.0
     };
 
+    pub fn get(&self, i: u8) -> f32 {
+        assert!(i < 3);
+        
+        match i {
+            0 => self.x,
+            1 => self.y,
+            2 => self.z,
+            _ => f32::INFINITY
+        }
+    }
+
     pub fn dot(&self, a: &Vec3) -> f32 {
         return self.x * a.x + self.y * a.y + self.z * a.z;
     }

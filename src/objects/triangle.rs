@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::objects::{Hitable, HitRecord};
+use crate::objects::{Hitable, HitRecord, Aaab};
 use crate::structures::vec3::Vec3;
 use crate::structures::ray::Ray;
 use crate::materials::Material;
@@ -59,5 +59,9 @@ impl Hitable for Triangle {
         }
 
         return None;
+    }
+
+    fn bounding_box(&self, t0: f32, t1: f32) -> Option<Aaab> {
+        None
     }
 }
