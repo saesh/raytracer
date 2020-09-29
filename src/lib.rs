@@ -1,4 +1,3 @@
-extern crate dyn_clone;
 extern crate rand;
 extern crate tobj;
 
