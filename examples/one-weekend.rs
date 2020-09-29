@@ -2,7 +2,7 @@ extern crate raytracer;
 
 use std::sync::Arc;
 
-use raytracer::io::random;
+use raytracer::random::{random_double, random_double_bounded};
 use raytracer::objects::sphere::Sphere;
 use raytracer::objects::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
@@ -11,7 +11,7 @@ use raytracer::objects::Hitable;
 use raytracer::materials::Dielectric;
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
-use raytracer::structures::vec3::{Vec3};
+use raytracer::structures::vec3::Vec3;
 use raytracer::run;
 
 fn main() {
@@ -50,8 +50,8 @@ fn main() {
         
         for b in -11..11 {
         
-            let choose_mat = random::random_double();
-            let center = Vec3::new(a as f32 + 0.9 * random::random_double(), 0.2, b as f32 + 0.9 * random::random_double());
+            let choose_mat = random_double();
+            let center = Vec3::new(a as f32 + 0.9 * random_double(), 0.2, b as f32 + 0.9 * random_double());
             
             if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
 
@@ -60,13 +60,13 @@ fn main() {
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Arc::new(Lambertian::new(albedo));
 
-                    let center2 = center + Vec3::new(0.0, random::random_double_bounded(0.0, 0.5), 0.0);
+                    let center2 = center + Vec3::new(0.0, random_double_bounded(0.0, 0.5), 0.0);
 
                     objects.push(Box::new(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, sphere_material)));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_bounded(0.5, 1.0);
-                    let fuzz = random::random_double_bounded(0.0, 0.5);
+                    let fuzz = random_double_bounded(0.0, 0.5);
                     let sphere_material = Arc::new(Metal::new(albedo, fuzz));
                     objects.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
                 } else {

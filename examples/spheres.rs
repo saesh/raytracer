@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
-use raytracer::color::{Color};
+use raytracer::color::Color;
 use raytracer::objects::Hitable;
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;

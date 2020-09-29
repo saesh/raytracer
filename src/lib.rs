@@ -8,8 +8,8 @@ pub mod objects;
 pub mod structures;
 pub mod random;
 
-use std::f32::{INFINITY};
-use std::time::{Instant};
+use std::f32::INFINITY;
+use std::time::Instant;
 
 use crate::random::random_double;
 use crate::io::ppm;
@@ -45,7 +45,7 @@ pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32
             })
             .reduce(|| BLACK, |final_color, next_color| final_color + next_color);
 
-            let final_color = map_color_256(gamma_correct(sample(pixel_color, samples_per_pixel)));
+            let final_color = map_color_256(gamma_correct(average_samples(pixel_color, samples_per_pixel)));
             ppm::write_pixel(final_color.0, final_color.1, final_color.2);
         }
     }
@@ -76,7 +76,7 @@ fn background_color(ray: &Ray) -> Color {
     return linear_blend(t, WHITE, Color::new(0.5, 0.7, 1.0));
 }
 
-fn sample(color: Color, samples_per_pixel: i32) -> Color {
+fn average_samples(color: Color, samples_per_pixel: i32) -> Color {
     let scale = 1.0 / samples_per_pixel as f32;
 
     return color * scale;
