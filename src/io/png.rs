@@ -15,4 +15,6 @@ pub fn write_png(path: &str, width: u32, height: u32, data: &Vec<u8>) {
     let mut writer = encoder.write_header().unwrap();
 
     writer.write_image_data(data).unwrap();
+
+    println!("Image saved to {:?}", path);
 }
