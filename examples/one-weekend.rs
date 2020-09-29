@@ -13,14 +13,15 @@ use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
 use raytracer::run;
+use raytracer::io::png;
 
 fn main() {
     // image
     const ASPECT_RATIO: f32 = 3.0 / 2.0;
-    let image_width: i32 = 820;
-    let image_height: i32 = (image_width as f32 / ASPECT_RATIO) as i32;
-    let samples_per_pixel = 1000;
-    let max_depth = 50;
+    let image_width: u32 = 820;
+    let image_height: u32 = (image_width as f32 / ASPECT_RATIO) as u32;
+    let samples_per_pixel: u32 = 1000;
+    let max_depth: u32 = 50;
 
     // camera
     let lookfrom = Vec3::new(13.0, 2.0, 3.0);
@@ -87,5 +88,6 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3)));
 
     // render
-    run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    let image_data = run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    png::write_png("out/one-weekend.png", image_width, image_width, &image_data);
 }

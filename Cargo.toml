@@ -8,6 +8,7 @@ edition = "2018"
 rand = "0.7.3"
 tobj = "2.0.2"
 rayon = "1.4.0"
+png = "0.16.7"
 
 [profile.release]
 opt-level = 3

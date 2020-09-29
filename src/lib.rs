@@ -12,7 +12,6 @@ use std::f32::INFINITY;
 use std::time::Instant;
 
 use crate::random::random_double;
-use crate::io::ppm;
 use crate::structures::camera::Camera;
 use crate::objects::Hitable;
 use crate::color::{Color, BLACK, WHITE, linear_blend, gamma_correct, map_color_256};
@@ -20,7 +19,7 @@ use crate::structures::ray::Ray;
 
 use rayon::prelude::*;
 
-pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32, image_height: i32, samples_per_pixel: i32, max_depth: i32) {
+pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: u32, image_height: u32, samples_per_pixel: u32, max_depth: u32) -> Vec<u8> {
     let start = Instant::now();
 
     eprintln!("Image size: {} x {}, {} pixels", image_width, image_height, image_width * image_height);
@@ -29,7 +28,7 @@ pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32
     eprintln!("Geometries in scene: {}", objects.len());
     eprintln!("Shutter speed: {}s", camera.time1 - camera.time0);
 
-    ppm::write_header(image_width, image_height);
+    let mut image_data: Vec<u8> = Vec::new();
 
     for pixel_y in (0..image_height).rev() {
 
@@ -45,15 +44,22 @@ pub fn run(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: i32
             })
             .reduce(|| BLACK, |final_color, next_color| final_color + next_color);
 
-            let final_color = map_color_256(gamma_correct(average_samples(pixel_color, samples_per_pixel)));
-            ppm::write_pixel(final_color.0, final_color.1, final_color.2);
+            let final_color = 
+                map_color_256(
+                    gamma_correct(
+                        average_samples(pixel_color, samples_per_pixel)));
+            image_data.push(final_color.0);
+            image_data.push(final_color.1);
+            image_data.push(final_color.2);
         }
     }
 
     eprintln!("\nDone in {:?}.", start.elapsed());
+
+    image_data
 }
 
-fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hitable>>, depth: i32) -> Color {
+fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hitable>>, depth: u32) -> Color {
     if depth <= 0 {
         return BLACK
     }
@@ -76,7 +82,7 @@ fn background_color(ray: &Ray) -> Color {
     return linear_blend(t, WHITE, Color::new(0.5, 0.7, 1.0));
 }
 
-fn average_samples(color: Color, samples_per_pixel: i32) -> Color {
+fn average_samples(color: Color, samples_per_pixel: u32) -> Color {
     let scale = 1.0 / samples_per_pixel as f32;
 
     return color * scale;

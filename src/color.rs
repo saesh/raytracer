@@ -94,11 +94,11 @@ pub fn gamma_correct(color: Color) -> Color {
     }
 }
 
-pub fn map_color_256(color: Color) -> (i32, i32, i32) {
+pub fn map_color_256(color: Color) -> (u8, u8, u8) {
     (
-        (256.0 * clamp(color.r, 0.0, 0.999)) as i32,
-        (256.0 * clamp(color.g, 0.0, 0.999)) as i32, 
-        (256.0 * clamp(color.b, 0.0, 0.999)) as i32,
+        (256.0 * clamp(color.r, 0.0, 0.999)) as u8,
+        (256.0 * clamp(color.g, 0.0, 0.999)) as u8, 
+        (256.0 * clamp(color.b, 0.0, 0.999)) as u8,
     )
 }
 

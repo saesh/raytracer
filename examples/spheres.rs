@@ -10,14 +10,15 @@ use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
 use raytracer::run;
+use raytracer::io::png;
 
 fn main() {
     // image
     const ASPECT_RATIO: f32 = 3.0 / 2.0;
-    let image_width: i32 = 500;
-    let image_height: i32 = (image_width as f32 / ASPECT_RATIO) as i32;
-    let samples_per_pixel = 500;
-    let max_depth = 10;
+    let image_width: u32 = 500;
+    let image_height: u32 = (image_width as f32 / ASPECT_RATIO) as u32;
+    let samples_per_pixel: u32 = 500;
+    let max_depth: u32 = 10;
 
     // camera
     let lookfrom = Vec3::new(0.0, 1.0, 3.0);
@@ -52,5 +53,6 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
 
     // render
-    run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    let image_data = run(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
+    png::write_png("out/spheres.png", image_width, image_height, &image_data);
 }
