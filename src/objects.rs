@@ -2,7 +2,6 @@ pub mod sphere;
 pub mod moving_sphere;
 pub mod triangle;
 
-use std::sync::Arc;
 use std::cmp::Ordering;
 
 use crate::structures::ray::Ray;
@@ -61,6 +60,7 @@ impl Hitable for Vec<Box<dyn Hitable>> {
     }
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct Aaab {
     min: Vec3,
     max: Vec3,
@@ -112,91 +112,111 @@ pub fn surrounding_box(box0: Aaab, box1: Aaab) -> Aaab {
     }
 }
 
-pub struct BvhNode<'a> {
-    left: Option<&'a Box<dyn Hitable>>,
-    right: Option<&'a Box<dyn Hitable>>,
-    volume_box: Aaab,
+pub struct BvhTree {
+    nodes: Vec<BvhNode>,
+    root: NodeId,
 }
 
-impl<'a> BvhNode<'a> {
-    pub fn new(&self, objects: &'a mut [Box<dyn Hitable>], time0: f32, time1: f32) -> Self {
+struct BvhNode {
+    left: Option<NodeId>,
+    right: Option<NodeId>,
+    aabb: Option<Aaab>,
+    hitable: Option<Box<dyn Hitable>>,
+}
+
+#[derive(Copy, Clone, Debug)]
+struct NodeId {
+    index: usize,
+}
+
+impl BvhTree {
+    pub fn new(objects: Vec<Box<dyn Hitable>>, time0: f32, time1: f32) -> impl Hitable + 'static {
+        let mut tree = BvhTree { nodes: Vec::new(), root: NodeId { index: 0} };
+    
+        tree.root = tree.build(&objects, time0, time1);
+
+        tree
+    }
+
+    fn build(&mut self, mut objects: &Vec<Box<dyn Hitable>>, time0: f32, time1: f32) -> NodeId {
         let axis = random_int_closed(0 , 2);
         let object_span = objects.len();
 
+        let left;
+        let right;
+
         if object_span == 1 {
-            self.left = Some(&objects[0]);
-            self.right = Some(&objects[0]);
+            left = self.new_leaf(objects[0], time0, time1);
+            right = self.new_leaf(objects[0], time0, time1);
         } else if object_span == 2 {
-            let ordering = BvhNode::compare(objects.get(0).unwrap(), objects.get(1).unwrap(), axis);
+            let ordering = compare(objects.get(0).unwrap(), objects.get(1).unwrap(), axis);
             if ordering == Ordering::Less {
-                self.left = objects.get(0);
-                self.right = objects.get(1);
+                left = self.new_leaf(objects[0], time0, time1);
+                right = self.new_leaf(objects[1], time0, time1);
             } else {
-                self.left = objects.get(1);
-                self.right = objects.get(0);
+                left = self.new_leaf(objects[0], time0, time1);
+                right = self.new_leaf(objects[1], time0, time1);
             }
         } else {
             match axis {
-                0 => objects.sort_by(|a, b| BvhNode::box_x_compare(a, b)),
-                1 => objects.sort_by(|a, b| BvhNode::box_y_compare(a, b)),
-                2 => objects.sort_by(|a, b| BvhNode::box_z_compare(a, b)),
+                0 => objects.sort_by(|a, b| box_x_compare(a, b)),
+                1 => objects.sort_by(|a, b| box_y_compare(a, b)),
+                2 => objects.sort_by(|a, b| box_z_compare(a, b)),
                 _ => eprintln!("Unexpected axis"),
             }
 
-            let mid = object_span / 2;
-            let left_node = BvhNode::new(self, &objects[start as usize..mid as usize], time0, time1);
-            self.left = Some(&Box::new(left_node));
-            self.right = Some(BvhNode::new(self, &objects[mid as usize..end as usize], time0, time1));
+            let mid = object_span / 2;    
+            let lt = objects[0..mid];
+            let (left_hitables, right_hitables) = objects.split_at(mid);
+            left = self.build(&objects[0..mid], time0, time1);
+            right = self.build(right_hitables, time0, time1);
         }
 
-        let box_left = self.left.bounding_box(time0, time1);
-    }
-
-    fn compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>, axis: u32) -> Ordering {
-        match axis {
-            0 => BvhNode::box_x_compare(a, b),
-            1 => BvhNode::box_y_compare(a, b),
-            2 => BvhNode::box_z_compare(a, b),
-            _ => eprintln!("Unexpected axis"),
-        }
-    }
-
-    fn box_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>, axis: u32) -> Ordering {
-        let box_a = a.bounding_box(0.0, 0.0);
-        let box_b = b.bounding_box(0.0, 0.0);
-
-        if box_a.is_none() || box_b.is_none() {
-            eprintln!("No bounding box in bvh_node constructor.");
+        let box_left = self.nodes[left.index].aabb;
+        let box_right = self.nodes[right.index].aabb;
+         
+        if box_left.is_none() || box_right.is_none() {
+            panic!("No bounding box in bvh_node constructor.");
         }
 
-        if let Some(cmp) = box_a.unwrap().min.get(axis as u8).partial_cmp(&box_b.unwrap().min.get(axis as u8)) {
-            return cmp;
-        } else {
-            panic!("Comparison failed")
-        };
+        self.new_node(surrounding_box(box_left.unwrap(), box_right.unwrap()), Some(left), Some(right))
     }
 
-    fn box_x_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
-        return BvhNode::box_compare(a, b, 0);
+    fn new_leaf(&mut self, hitable: Box<dyn Hitable>, time0: f32, time1: f32) -> NodeId {
+        let next_index = self.nodes.len();
+
+        self.nodes.push(BvhNode {
+            left: None,
+            right: None,
+            aabb: hitable.bounding_box(time0, time1),
+            hitable: Some(hitable),
+        });
+
+        NodeId { index: next_index }
     }
 
-    fn box_y_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
-        return BvhNode::box_compare(a, b, 1);
+    fn new_node(&mut self, aabb: Aaab, left: Option<NodeId>, right: Option<NodeId>) -> NodeId {
+        let next_index = self.nodes.len();
+
+        self.nodes.push(BvhNode {
+            left,
+            right,
+            aabb: Some(aabb),
+            hitable: None,
+        });
+
+        NodeId { index: next_index }
     }
 
-    fn box_z_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
-        return BvhNode::box_compare(a, b, 2);
-    }
-}
+    fn hit(&self, id: NodeId, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let node = &self.nodes[id.index];
 
-impl<'a> Hitable for BvhNode<'a> {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
-        if !self.volume_box.hit(ray, t_min, t_max) {
+        if node.aabb.is_some() && !node.aabb.unwrap().hit(ray, t_min, t_max) {
             return None;
         }
 
-        let left_hit = self.left.unwrap().hit(ray, t_min, t_max);
-        let right_hit = self.right.unwrap().hit(ray, t_min, if left_hit.is_some() { left_hit.unwrap().t } else { t_max });
+        let left_hit = self.nodes[node.left.unwrap().index].hitable.unwrap().hit(ray, t_min, t_max);
+        let right_hit = self.nodes[node.right.unwrap().index].hitable.unwrap().hit(ray, t_min, if left_hit.is_some() { left_hit.unwrap().t } else { t_max });
 
         if left_hit.is_some() && right_hit.is_some() {
             let left_t = left_hit.unwrap().t;
@@ -218,8 +238,50 @@ impl<'a> Hitable for BvhNode<'a> {
 
         None
     }
+}
+
+impl Hitable for BvhTree {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        self.hit(self.root, ray, t_min, t_max)
+    }
 
     fn bounding_box(&self, t0: f32, t1: f32) -> Option<Aaab> {
-        Some(self.volume_box)
+        self.nodes[self.root.index].aabb
     }
+}
+
+fn compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>, axis: u32) -> Ordering {
+    match axis {
+        0 => box_x_compare(a, b),
+        1 => box_y_compare(a, b),
+        2 => box_z_compare(a, b),
+        _ => panic!("Unexpected axis"),
+    }
+}
+
+fn box_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>, axis: u32) -> Ordering {
+    let box_a = a.bounding_box(0.0, 0.0);
+    let box_b = b.bounding_box(0.0, 0.0);
+
+    if box_a.is_none() || box_b.is_none() {
+        panic!("No bounding box in bvh_node constructor.");
+    }
+
+    if let Some(cmp) = box_a.unwrap().min.get(axis as u8).partial_cmp(&box_b.unwrap().min.get(axis as u8)) {
+        return cmp;
+    } else {
+        panic!("Comparison failed")
+    };
+}
+
+fn box_x_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
+    return box_compare(a, b, 0);
+}
+
+fn box_y_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
+    return box_compare(a, b, 1);
+}
+
+fn box_z_compare(a: &Box<dyn Hitable>, b: &Box<dyn Hitable>) -> Ordering {
+    return box_compare(a, b, 2);
 }

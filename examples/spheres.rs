@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
+use raytracer::objects::BvhTree;
 use raytracer::color::Color;
 use raytracer::objects::Hitable;
 use raytracer::materials::Lambertian;
@@ -48,9 +49,20 @@ fn main() {
     objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold)));
 
     let green = Arc::new(Metal::new(Color::new(0.2, 0.8, 0.5), 0.8));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone())));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone())));
-    objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
+    // objects.push(Box::new(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone())));
+    // objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone())));
+    // objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
+
+    let sphere_bvh = Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone()));
+    let mut objects_bvh = vec![];
+    objects_bvh.push(sphere_bvh);
+
+    let mut objects_bvh: Vec<Box<dyn Hitable>> = objects_bvh.into_iter().map(|a| a as Box<dyn Hitable>).collect();
+    let bvh = BvhTree::new(&mut objects_bvh, 0.0, 0.0);
+
+    let bvh_boxed = Box::new(bvh);
+
+    objects.push(bvh_boxed);
 
     // render
     let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);

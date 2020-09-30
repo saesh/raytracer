@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 
 use crate::random::random_double_bounded;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
