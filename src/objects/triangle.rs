@@ -63,6 +63,16 @@ impl Hitable for Triangle {
     }
 
     fn bounding_box(&self, _t0: f32, _t1: f32) -> Option<AABB> {
-        None
+        Some(AABB {
+            min: Vec3::new(
+              self.vertex0.x.min(self.vertex1.x.min(self.vertex2.x)),
+              self.vertex0.y.min(self.vertex1.y.min(self.vertex2.y)),
+              self.vertex0.z.min(self.vertex1.z.min(self.vertex2.z))),
+              
+            max: Vec3::new(
+              self.vertex0.x.max(self.vertex1.x.max(self.vertex2.x)),
+              self.vertex0.y.max(self.vertex1.y.max(self.vertex2.y)),
+              self.vertex0.z.max(self.vertex1.z.max(self.vertex2.z))),
+          })
     }
 }
