@@ -4,6 +4,7 @@ use crate::hitable::Hitable;
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
 use crate::materials::{Material, HitRecord};
+use crate::aabb::{AABB};
 
 pub struct Sphere {
     pub center: Vec3,
@@ -53,5 +54,12 @@ impl Hitable for Sphere {
         }
 
         return None;
+    }
+
+    fn bounding_box(&self, _t0: f32, _t1: f32) -> Option<AABB> {
+        Some(AABB {
+            min: self.center - Vec3 { x: self.radius, y: self.radius, z: self.radius },
+            max: self.center + Vec3 { x: self.radius, y: self.radius, z: self.radius },
+        })
     }
 }

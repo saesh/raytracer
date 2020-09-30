@@ -11,6 +11,7 @@ use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
 use raytracer::render;
 use raytracer::io::png;
+use raytracer::bvh::BVH;
 
 fn main() {
     // image
@@ -52,7 +53,7 @@ fn main() {
     hitable_list.push(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone()));
     hitable_list.push(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone()));
 
-    let world: Box<dyn Hitable> = Box::new(hitable_list);
+    let world: Box<dyn Hitable> = Box::new(BVH::new(hitable_list.list, 0.0, 0.0));
     
     // render
     let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);

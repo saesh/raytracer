@@ -4,6 +4,7 @@ use crate::hitable::Hitable;
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
 use crate::materials::{Material, HitRecord};
+use crate::aabb::{AABB, surrounding_box};
 
 pub struct MovingSphere {
     pub center0: Vec3,
@@ -60,5 +61,19 @@ impl Hitable for MovingSphere {
         }
 
         return None;
+    }
+
+    fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
+        let box0 = AABB {
+            min: self.center(t0) - Vec3 { x: self.radius, y: self.radius, z: self.radius },
+            max: self.center(t0) + Vec3 { x: self.radius, y: self.radius, z: self.radius },
+        };
+
+        let box1 = AABB {
+            min: self.center(t1) - Vec3 { x: self.radius, y: self.radius, z: self.radius },
+            max: self.center(t1) + Vec3 { x: self.radius, y: self.radius, z: self.radius },
+        };
+
+        Some(surrounding_box(&box0, &box1))
     }
 }

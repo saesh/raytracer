@@ -8,6 +8,8 @@ pub mod objects;
 pub mod structures;
 pub mod random;
 pub mod hitable;
+pub mod aabb;
+pub mod bvh;
 
 use std::f32::INFINITY;
 use std::time::Instant;

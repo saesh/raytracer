@@ -14,14 +14,15 @@ use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
 use raytracer::render;
 use raytracer::io::png;
+use raytracer::bvh::BVH;
 
 fn main() {
     // image
     const ASPECT_RATIO: f32 = 3.0 / 2.0;
-    let image_width: u32 = 820;
+    let image_width: u32 = 200;
     let image_height: u32 = (image_width as f32 / ASPECT_RATIO) as u32;
-    let samples_per_pixel: u32 = 1000;
-    let max_depth: u32 = 50;
+    let samples_per_pixel: u32 = 10;
+    let max_depth: u32 = 10;
 
     // camera
     let lookfrom = Vec3::new(13.0, 2.0, 3.0);
@@ -42,14 +43,6 @@ fn main() {
         1.0);
 
     // world
-    let world = world();
-
-    // render
-    let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
-    png::write_png("out/one-weekend.png", image_width, image_width, &image_data);
-}
-
-fn world() -> Box<dyn Hitable> {
     let mut world = HitableList::default();
 
     let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
@@ -95,5 +88,9 @@ fn world() -> Box<dyn Hitable> {
     let material3  = Arc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
     world.push(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3));
 
-    Box::new(world)
+    let world: Box<dyn Hitable> = Box::new(BVH::new(world.list, 0.0, 1.0));
+
+    // render
+    let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
+    png::write_png("out/one-weekend.png", image_width, image_height, &image_data);
 }

@@ -4,6 +4,7 @@ use crate::hitable::Hitable;
 use crate::structures::vec3::Vec3;
 use crate::structures::ray::Ray;
 use crate::materials::{Material, HitRecord};
+use crate::aabb::AABB;
 
 const EPSILON: f32 = 0.0000001;
 
@@ -59,5 +60,9 @@ impl Hitable for Triangle {
         }
 
         return None;
+    }
+
+    fn bounding_box(&self, _t0: f32, _t1: f32) -> Option<AABB> {
+        None
     }
 }
