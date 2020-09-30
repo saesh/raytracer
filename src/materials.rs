@@ -7,18 +7,22 @@ use crate::structures::vec3::{Vec3, random_in_unit_sphere, random_unit_vector};
 pub struct HitRecord<'a> {
     pub p: Vec3,
     pub t: f32,
+    pub u: f32,
+    pub v: f32,
     pub normal: Vec3,
     pub front_face: bool,
     pub material: &'a dyn Material,
 }
 
 impl<'a> HitRecord<'a> {
-    pub fn new(p: Vec3, t: f32, ray: &Ray, outward_normal: &Vec3, material: &'a dyn Material) -> Self {
+    pub fn new(p: Vec3, t: f32, u: f32, v: f32, ray: &Ray, outward_normal: &Vec3, material: &'a dyn Material) -> Self {
         let front_face = ray.direction.dot(outward_normal) < 0.0;
 
         HitRecord {
             p: p,
             t: t,
+            u: u,
+            v: v,
             front_face: front_face,
             normal: match front_face { 
                 true => Vec3::new(outward_normal.x, outward_normal.y, outward_normal.z),

@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::f32::consts::PI;
 
 use crate::hitable::Hitable;
 use crate::structures::ray::Ray;
@@ -15,6 +16,15 @@ pub struct Sphere {
 impl Sphere{
     pub fn new(center: Vec3, radius: f32, material: Arc<dyn Material>) -> Self {
         Sphere {center: center, radius: radius, material: material}
+    }
+
+    fn get_sphere_uv(p: &Vec3) -> (f32, f32) {
+        let phi = p.z.atan2(p.x);
+        let theta = p.y.asin();
+        let u = 1.0 - (phi + PI) / (2.0 * PI);
+        let v = (theta + PI / 2.0) / PI;
+
+        (u, v)
     }
 }
 
@@ -38,7 +48,8 @@ impl Hitable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
+                let (u, v) = Sphere::get_sphere_uv(&(hit_point - self.center));
+                let hit_record = HitRecord::new(hit_point, temp_t, u, v, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             }
@@ -47,7 +58,8 @@ impl Hitable for Sphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
+                let (u, v) = Sphere::get_sphere_uv(&(hit_point - self.center));
+                let hit_record = HitRecord::new(hit_point, temp_t, u, v, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             } 

@@ -10,6 +10,7 @@ pub mod random;
 pub mod hitable;
 pub mod aabb;
 pub mod bvh;
+pub mod texture;
 
 use std::f32::INFINITY;
 use std::time::Instant;

@@ -45,7 +45,7 @@ impl Hitable for MovingSphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center(ray.time)) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
+                let hit_record = HitRecord::new(hit_point, temp_t, 0.0, 0.0, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             }
@@ -54,7 +54,7 @@ impl Hitable for MovingSphere {
             if temp_t < t_max && temp_t > t_min {
                 let hit_point = ray.at(temp_t);
                 let outward_normal = (hit_point - self.center(ray.time)) / self.radius;
-                let hit_record = HitRecord::new(hit_point, temp_t, ray, &outward_normal, &*self.material);
+                let hit_record = HitRecord::new(hit_point, temp_t, 0.0, 0.0, ray, &outward_normal, &*self.material);
 
                 return Some(hit_record);
             } 

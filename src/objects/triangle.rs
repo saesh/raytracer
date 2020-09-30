@@ -55,7 +55,7 @@ impl Hitable for Triangle {
             let normal = edge1.cross(&edge2).normalize();
 
             return Some(
-                HitRecord::new(hit_point, t, ray, &normal, &*self.material)
+                HitRecord::new(hit_point, t, 0.0, 0.0, ray, &normal, &*self.material)
             );
         }
 
