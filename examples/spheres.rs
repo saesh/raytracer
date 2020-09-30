@@ -39,26 +39,22 @@ fn main() {
         0.1);
 
     // world
-    let world = world();
+    let mut hitable_list = HitableList::default();
+
+    let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    hitable_list.push(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
+
+    let gold = Arc::new(Metal::new(Color::new(1.0, 0.84, 0.0), 0.1));
+    hitable_list.push(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold));
+
+    let green = Arc::new(Metal::new(Color::new(0.2, 0.8, 0.5), 0.8));
+    hitable_list.push(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone()));
+    hitable_list.push(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone()));
+    hitable_list.push(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone()));
+
+    let world: Box<dyn Hitable> = Box::new(hitable_list);
     
     // render
     let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
     png::write_png("out/spheres.png", image_width, image_height, &image_data);
-}
-
-fn world() -> Box<dyn Hitable> {
-    let mut world = HitableList::default();
-
-    let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    world.push(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
-
-    let gold = Arc::new(Metal::new(Color::new(1.0, 0.84, 0.0), 0.1));
-    world.push(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold));
-
-    let green = Arc::new(Metal::new(Color::new(0.2, 0.8, 0.5), 0.8));
-    world.push(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone()));
-    world.push(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone()));
-    world.push(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone()));
-
-    Box::new(world)
 }
