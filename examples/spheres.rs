@@ -5,7 +5,7 @@ use std::sync::Arc;
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::color::Color;
-use raytracer::objects::Hitable;
+use raytracer::hitable::{Hitable, HitableList};
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
 use raytracer::structures::vec3::Vec3;
@@ -39,20 +39,26 @@ fn main() {
         0.1);
 
     // world
-    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
+    let world = world();
+    
+    // render
+    let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
+    png::write_png("out/spheres.png", image_width, image_height, &image_data);
+}
+
+fn world() -> Box<dyn Hitable> {
+    let mut world = HitableList::default();
 
     let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
+    world.push(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
 
     let gold = Arc::new(Metal::new(Color::new(1.0, 0.84, 0.0), 0.1));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold)));
+    world.push(Sphere::new(Vec3::new(0.0, 0.5, 0.0), 0.5, gold));
 
     let green = Arc::new(Metal::new(Color::new(0.2, 0.8, 0.5), 0.8));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone())));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone())));
-    objects.push(Box::new(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone())));
+    world.push(Sphere::new(Vec3::new(0.2, 0.05, 0.5), 0.05, green.clone()));
+    world.push(Sphere::new(Vec3::new(0.0, 0.05, 0.5), 0.05, green.clone()));
+    world.push(Sphere::new(Vec3::new(-0.2, 0.05, 0.5), 0.05, green.clone()));
 
-    // render
-    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
-    png::write_png("out/spheres.png", image_width, image_height, &image_data);
+    Box::new(world)
 }

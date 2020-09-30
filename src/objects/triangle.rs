@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use crate::objects::{Hitable, HitRecord};
+use crate::hitable::Hitable;
 use crate::structures::vec3::Vec3;
 use crate::structures::ray::Ray;
-use crate::materials::Material;
+use crate::materials::{Material, HitRecord};
 
 const EPSILON: f32 = 0.0000001;
 

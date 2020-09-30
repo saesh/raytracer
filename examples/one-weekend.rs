@@ -7,7 +7,7 @@ use raytracer::objects::sphere::Sphere;
 use raytracer::objects::moving_sphere::MovingSphere;
 use raytracer::structures::camera::Camera;
 use raytracer::color::Color;
-use raytracer::objects::Hitable;
+use raytracer::hitable::{Hitable, HitableList};
 use raytracer::materials::Dielectric;
 use raytracer::materials::Lambertian;
 use raytracer::materials::Metal;
@@ -42,10 +42,18 @@ fn main() {
         1.0);
 
     // world
-    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
+    let world = world();
+
+    // render
+    let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
+    png::write_png("out/one-weekend.png", image_width, image_width, &image_data);
+}
+
+fn world() -> Box<dyn Hitable> {
+    let mut world = HitableList::default();
 
     let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
+    world.push(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
 
     for a in -11..11 {
         
@@ -63,31 +71,29 @@ fn main() {
 
                     let center2 = center + Vec3::new(0.0, random_double_bounded(0.0, 0.5), 0.0);
 
-                    objects.push(Box::new(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, sphere_material)));
+                    world.push(MovingSphere::new(center, center2, 0.0, 1.0, 0.2, sphere_material));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_bounded(0.5, 1.0);
                     let fuzz = random_double_bounded(0.0, 0.5);
                     let sphere_material = Arc::new(Metal::new(albedo, fuzz));
-                    objects.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                    world.push(Sphere::new(center, 0.2, sphere_material));
                 } else {
                     // glass
                     let sphere_material = Arc::new(Dielectric::new(1.5));
-                    objects.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                    world.push(Sphere::new(center, 0.2, sphere_material));
                 }
             }
         }
     }
     let material1 = Arc::new(Dielectric::new(1.5));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, material1)));
+    world.push(Sphere::new(Vec3::new(0.0, 1.0, 0.0), 1.0, material1));
 
     let material2 = Arc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
-    objects.push(Box::new(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, material2)));
+    world.push(Sphere::new(Vec3::new(-4.0, 1.0, 0.0), 1.0, material2));
 
     let material3  = Arc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
-    objects.push(Box::new(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3)));
+    world.push(Sphere::new(Vec3::new(4.0,1.0, 0.0), 1.0, material3));
 
-    // render
-    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
-    png::write_png("out/one-weekend.png", image_width, image_width, &image_data);
+    Box::new(world)
 }

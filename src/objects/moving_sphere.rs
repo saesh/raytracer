@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use crate::objects::{Hitable, HitRecord};
+use crate::hitable::Hitable;
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
-use crate::materials::Material;
+use crate::materials::{Material, HitRecord};
 
 pub struct MovingSphere {
     pub center0: Vec3,

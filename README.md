@@ -15,3 +15,4 @@ Computation of samples per pixel are parallelized using [rayon](https://crates.i
 ## Acknowledgements
 
 - https://github.com/perliedman/raytracing-in-one-weekend
+- https://github.com/fralken/ray-tracing-the-next-week/blob/master/src/main.rs

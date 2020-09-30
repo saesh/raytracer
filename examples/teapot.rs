@@ -7,7 +7,7 @@ use raytracer::io::obj::load_teapot;
 use raytracer::objects::sphere::Sphere;
 use raytracer::structures::camera::Camera;
 use raytracer::color::*;
-use raytracer::objects::Hitable;
+use raytracer::hitable::{Hitable, HitableList};
 use raytracer::materials::Lambertian;
 use raytracer::structures::vec3::*;
 use raytracer::render;
@@ -39,17 +39,24 @@ fn main() {
         0.1);
 
     // world
-    let mut objects: Vec<Box<dyn Hitable>> = Vec::new();
+    let world = world();
+
+    let image_data = render(camera, &world, image_width, image_height, samples_per_pixel, max_depth);
+    
+    png::write_png("out/teapot.png", image_width, image_width, &image_data);
+}
+
+fn world() -> Box<dyn Hitable> {
+    let mut world = HitableList::default();
+    
 
     match load_teapot() {
-        Some(triangles) => { for triangle in triangles { objects.push(Box::new(triangle)) }},
+        Some(triangles) => { for triangle in triangles { world.push(triangle) }},
         None => {}
     };
 
     let material_ground = Arc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    objects.push(Box::new(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
+    world.push(Sphere::new(Vec3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
 
-    let image_data = render(camera, &mut objects, image_width, image_height, samples_per_pixel, max_depth);
-    
-    png::write_png("out/teapot.png", image_width, image_width, &image_data);
+    Box::new(world)
 }

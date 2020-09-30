@@ -7,20 +7,21 @@ pub mod materials;
 pub mod objects;
 pub mod structures;
 pub mod random;
+pub mod hitable;
 
 use std::f32::INFINITY;
 use std::time::Instant;
 
 use crate::random::random_double;
 use crate::structures::camera::Camera;
-use crate::objects::Hitable;
+use crate::hitable::Hitable;
 use crate::color::{Color, BLACK, WHITE, linear_blend, gamma_correct, map_color_256};
 use crate::structures::ray::Ray;
 
 use indicatif::{ProgressBar, ProgressStyle, HumanDuration};
 use rayon::prelude::*;
 
-pub fn render(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: u32, image_height: u32, samples_per_pixel: u32, max_depth: u32) -> Vec<u8> {
+pub fn render(camera: Camera, world: &Box<dyn Hitable>, image_width: u32, image_height: u32, samples_per_pixel: u32, max_depth: u32) -> Vec<u8> {
 
     let start = Instant::now();
     let pixel_total = image_width * image_height;
@@ -34,7 +35,7 @@ pub fn render(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: 
     println!("\nImage size: {} x {}, {} pixels", image_width, image_height, image_width * image_height);
     println!("Samples per pixel: {}", samples_per_pixel);
     println!("Maximum ray bounces: {}", max_depth);
-    println!("Geometries in scene: {}", objects.len());
+    // println!("Geometries in scene: {}", world.len());
     println!("Shutter speed: {}s\n", camera.time1 - camera.time0);
 
     let mut image_data: Vec<u8> = Vec::new();
@@ -47,7 +48,7 @@ pub fn render(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: 
                 let u: f32 = (pixel_x as f32 + random_double()) / (image_width as f32 - 1.0);
                 let v: f32 = (pixel_y as f32 + random_double()) / (image_height as f32 - 1.0);
                 let ray = camera.get_ray(u, v);
-                ray_color(&ray, &objects, max_depth)
+                ray_color(&ray, &world, max_depth)
             })
             .reduce(|| BLACK, |final_color, next_color| final_color + next_color);
 
@@ -71,15 +72,15 @@ pub fn render(camera: Camera, objects: &mut Vec<Box<dyn Hitable>>, image_width: 
     image_data
 }
 
-fn ray_color(ray: &Ray, objects: &Vec<Box<dyn Hitable>>, depth: u32) -> Color {
+fn ray_color(ray: &Ray, world: &Box<dyn Hitable>, depth: u32) -> Color {
     if depth <= 0 {
         return BLACK
     }
 
-    match objects.hit(ray, 0.001, INFINITY) {
+    match world.hit(ray, 0.001, INFINITY) {
         Some(hit_record) => {
             return match hit_record.material.scatter(ray, &hit_record) {
-                Some((color, new_ray)) => color * ray_color(&new_ray, objects, depth - 1),
+                Some((color, new_ray)) => color * ray_color(&new_ray, world, depth - 1),
                 None => BLACK
             }
         },
